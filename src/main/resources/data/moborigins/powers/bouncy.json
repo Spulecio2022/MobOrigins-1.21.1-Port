@@ -1,3 +1,4 @@
 {
-  "type": "moborigins:bouncy"
+  "type": "moborigins:bouncy",
+  "hidden": true
 }

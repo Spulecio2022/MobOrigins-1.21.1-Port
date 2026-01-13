@@ -1,59 +1,52 @@
 package me.ultrusmods.moborigins.power;
 
-import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.power.Power;
-import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.power.factory.PowerFactory;
+import io.github.apace100.apoli.condition.BlockCondition;
+import io.github.apace100.apoli.data.TypedDataObjectFactory;
+import io.github.apace100.apoli.power.PowerConfiguration;
+import io.github.apace100.apoli.power.type.PowerType;
 import io.github.apace100.calio.data.SerializableData;
 import me.ultrusmods.moborigins.MobOriginsMod;
-import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldView;
+import net.minecraft.world.level.Level;
+import net.minecraft.core.BlockPos;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Predicate;
+import java.util.Optional;
 
-/** {DOCS}
-    NAME: Custom Sleep Block
-    DESC: This power type allows you to sleep on blocks other than beds.
+public class CustomSleepPower extends PowerType {
 
-    PARAMS:
-    - {block_condition} {Block Condition Type} {https://origins.readthedocs.io/en/latest/types/block_condition_types/} {optional} {This determines what type of block you can sleep on, if null, any block will work.}
+    public static final TypedDataObjectFactory<CustomSleepPower> DATA_FACTORY =
+            TypedDataObjectFactory.simple(
+                    new SerializableData()
+                            .add("block_condition", BlockCondition.DATA_TYPE.optional(), Optional.empty()),
+                    data -> new CustomSleepPower(
+                            data.get("block_condition")
+                    ),
+                    (power, serializableData) -> serializableData.instance()
+                            .set("block_condition", power.blockCondition)
+            );
 
-    EXAMPLE:
- {
-  "type": "moborigins:custom_sleep_block",
-  "block_condition": {
-    "type": "origins:in_tag",
-    "tag": "minecraft:logs"
-  }
-}
+    private final Optional<BlockCondition> blockCondition;
 
-        POWER_DESC: This power will make it so that you can sleep on any log block.
- */
-public class CustomSleepPower extends Power {
-    private final Predicate<CachedBlockPosition> blockCondition;
-
-    public CustomSleepPower(PowerType<?> type, LivingEntity entity, Predicate<CachedBlockPosition> blockCondition) {
-        super(type, entity);
+    public CustomSleepPower(Optional<BlockCondition> blockCondition) {
         this.blockCondition = blockCondition;
     }
 
-    public boolean doesApply(WorldView world, BlockPos pos) {
-        if (blockCondition == null) {
-            return true;
-        }
-        CachedBlockPosition cbp = new CachedBlockPosition(world, pos, true);
-        return blockCondition.test(cbp);
+    @SuppressWarnings("unchecked")
+    public static final PowerConfiguration<PowerType> CONFIG =
+            (PowerConfiguration<PowerType>) (PowerConfiguration<?>)
+                    PowerConfiguration.of(
+                            MobOriginsMod.id("custom_sleep_block"),
+                            DATA_FACTORY
+                    );
+
+    @Override
+    public @NotNull PowerConfiguration<?> getConfig() {
+        return CONFIG;
     }
 
-    public static PowerFactory createFactory() {
-        return new PowerFactory<>(MobOriginsMod.id("custom_sleep_block"),
-                new SerializableData()
-                        .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null),
-
-                data ->
-                        (type, livingEntity) -> new CustomSleepPower(type, livingEntity, data.get("block_condition")))
-                .allowCondition();
+    public boolean doesApply(Level world, BlockPos pos) {
+        return blockCondition
+                .map(cond -> cond.test(world, pos))
+                .orElse(true);
     }
 }

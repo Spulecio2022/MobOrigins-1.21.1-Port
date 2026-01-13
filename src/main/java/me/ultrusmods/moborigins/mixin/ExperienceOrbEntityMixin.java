@@ -2,40 +2,42 @@ package me.ultrusmods.moborigins.mixin;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import me.ultrusmods.moborigins.power.AddExperienceToResourcePower;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ExperienceOrbEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import me.ultrusmods.moborigins.power.MobOriginsPowers;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
-@Mixin(ExperienceOrbEntity.class)
+@Mixin(ExperienceOrb.class)
 public abstract class ExperienceOrbEntityMixin extends Entity {
 
-    @Shadow
-    private int amount;
-
-    public ExperienceOrbEntityMixin(EntityType<?> entityType, World world) {
-        super(entityType, world);
+    public ExperienceOrbEntityMixin(EntityType<?> type, Level level) {
+        super(type, level);
     }
 
-    @SuppressWarnings("InvalidInjectorMethodSignature")
-    @ModifyVariable(
-            method = "onPlayerCollision",
-            at = @At(value = "INVOKE_ASSIGN", shift = At.Shift.AFTER, target = "Lnet/minecraft/entity/ExperienceOrbEntity;repairPlayerGears(Lnet/minecraft/entity/player/PlayerEntity;I)I"),
-            index = 2
+    @Inject(
+            method = "playerTouch",
+            at = @At("TAIL")
     )
-    public int changeLeftoverAmount(int value, PlayerEntity player) {
-        int newVal = value;
-        List<AddExperienceToResourcePower> powers = PowerHolderComponent.getPowers(player, AddExperienceToResourcePower.class);
+    private void moborigins$addXpToResource(Player player, CallbackInfo ci) {
+
+        PowerHolderComponent component = PowerHolderComponent.getNullable(player);
+        if (component == null) return;
+
+        List<AddExperienceToResourcePower> powers = component.getPowers(true).stream()
+                .filter(power -> power.getId().equals(MobOriginsPowers.ADD_EXPERIENCE_TO_RESOURCE))
+                .map(power -> (AddExperienceToResourcePower) component.getPowerType(power))
+                .toList();
+
         for (AddExperienceToResourcePower power : powers) {
-            newVal = power.addToResource(newVal);
+            power.addToResource(0);
         }
-        return newVal;
     }
 }

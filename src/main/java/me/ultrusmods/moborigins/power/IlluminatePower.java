@@ -1,52 +1,47 @@
 package me.ultrusmods.moborigins.power;
 
-import io.github.apace100.apoli.power.Power;
-import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.power.factory.PowerFactory;
+import io.github.apace100.apoli.condition.EntityCondition;
+import io.github.apace100.apoli.power.PowerConfiguration;
+import io.github.apace100.apoli.power.type.PowerType;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import me.ultrusmods.moborigins.MobOriginsMod;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.NotNull;
 
-/** {DOCS}
-    NAME: Illuminate
+import java.util.Optional;
 
-    DESC: This power type allows you to make a mob emit light like a glow squid.
+public class IlluminatePower extends PowerType {
 
-    PARAMS:
-    - {light} {Integer} {https://origins.readthedocs.io/en/latest/types/data_types/integer/} {15} {The light level the mob will emit.}
+    public static final SerializableData DATA = new SerializableData()
+            .add("light", SerializableDataTypes.INT, 15);
 
-    EXAMPLE:
-{
-    "type": "moborigins:illuminate",
-    "light": 15,
-    "condition": {
-        "type": "origins:exposed_to_sun",
-        "inverted": true
-    }
-}
+    @SuppressWarnings("unchecked")
+    public static final PowerConfiguration<PowerType> CONFIG =
+            (PowerConfiguration<PowerType>) (PowerConfiguration<?>)
+                    PowerConfiguration.conditionedOf(
+                            MobOriginsMod.id("illuminate"),
+                            DATA,
+                            IlluminatePower::new,
+                            (power, serializableData) -> {
+                                SerializableData.Instance instance = serializableData.instance();
+                                instance.set("light", ((IlluminatePower) power).getLight());
+                                return instance;
+                            }
+                    );
 
-    POWER_DESC: This power makes it so when you are not exposed to the sun (eg: in a cave, or at night) you glow just like a glow squid.
- */
-public class IlluminatePower extends Power {
     private final int light;
 
-    public IlluminatePower(PowerType<?> type, LivingEntity entity, int light) {
-        super(type, entity);
-        this.light = MathHelper.clamp(light, 0, 15);
+    public IlluminatePower(SerializableData.Instance data, @NotNull Optional<EntityCondition> condition) {
+        super(condition);
+        this.light = Math.max(0, Math.min(15, data.getInt("light")));
+    }
+
+    @Override
+    public PowerConfiguration<?> getConfig() {
+        return CONFIG;
     }
 
     public int getLight() {
         return light;
-    }
-
-    public static PowerFactory createFactory() {
-        return new PowerFactory<>(MobOriginsMod.id("illuminate"),
-                new SerializableData()
-                        .add("light", SerializableDataTypes.INT, 15),
-                data ->
-                        (type, livingEntity) -> new IlluminatePower(type, livingEntity, data.getInt("light")))
-                .allowCondition();
     }
 }

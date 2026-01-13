@@ -1,5 +1,6 @@
 {
   "type": "origins:action_when_hit",
+
   "bientity_action": {
     "type": "origins:actor_action",
     "action": {
@@ -12,6 +13,7 @@
       }
     }
   },
+
   "damage_condition": {
     "type": "origins:in_tag",
     "tag": "minecraft:avoids_guardian_thorns",

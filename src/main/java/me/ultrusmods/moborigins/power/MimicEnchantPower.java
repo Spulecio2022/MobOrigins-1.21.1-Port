@@ -1,74 +1,62 @@
 package me.ultrusmods.moborigins.power;
 
-import io.github.apace100.apoli.power.Power;
-import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.power.factory.PowerFactory;
+import io.github.apace100.apoli.data.TypedDataObjectFactory;
+import io.github.apace100.apoli.power.PowerConfiguration;
+import io.github.apace100.apoli.power.type.PowerType;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import me.ultrusmods.moborigins.MobOriginsMod;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.item.enchantment.Enchantment;
+import org.jetbrains.annotations.NotNull;
 
-//TODO: Make it a modifying power
+public class MimicEnchantPower extends PowerType {
 
-/** {DOCS}
-    NAME: Mimic Enchant
-    DESC: Mimics an enchantment on the entity, acting as if the entity had the enchantment, while not actually having it.
-    PARAMS:
-        - {enchantment} {Enchantment} {https://origins.readthedocs.io/en/latest/types/data_types/enchantment/} { }  {The enchantment to mimic.}
-        - {level} {Integer} {https://origins.readthedocs.io/en/latest/types/data_types/integer/} { }  {The level of the enchantment to mimic.}
-    EXAMPLE:
-{
-  "type": "moborigins:mimic_enchant",
-  "enchantment": "minecraft:frost_walker",
-  "level": 3
-}
-    POWER_DESC: Mimics the Frost Walker enchantment on the entity.
- ### Extra Info
-
-This will also change the result of the `origins:enchantment` entity condition.
-
-This doesn't work on all enchantments due to limitations in minecraft. These are the ones that do work:
- - All Protection Enchantments
- - Sweeping Edge
- - Knockback
- - Fire Aspect
- - Respiration
- - Depth Strider
- - Efficiency
- - Looting
- - Aqua Affinity
- - Frost Walker
- - Soul Speed
- - Power
- - Punch
- - Flame
- */
-public class MimicEnchantPower extends Power {
     private final Enchantment enchantment;
     private final int level;
 
-    public MimicEnchantPower(PowerType<Power> type, LivingEntity livingEntity, Enchantment enchantment, int level) {
-        super(type, livingEntity);
+    public MimicEnchantPower(Enchantment enchantment, int level) {
         this.enchantment = enchantment;
         this.level = level;
-    }
-
-    public int getLevel() {
-        return level;
     }
 
     public Enchantment getEnchantment() {
         return enchantment;
     }
 
-    public static PowerFactory createFactory() {
-        return new PowerFactory<>(MobOriginsMod.id("mimic_enchant"),
-                new SerializableData()
-                        .add("enchantment", SerializableDataTypes.ENCHANTMENT, null)
-                        .add("level", SerializableDataTypes.INT, 1),
-                data ->
-                        (type, livingEntity) -> new MimicEnchantPower(type, livingEntity, data.get("enchantment"), data.getInt("level")))
-                .allowCondition();
+    public int getLevel() {
+        return level;
+    }
+
+    // -------------------------
+    // DATA FACTORY
+    // -------------------------
+    public static final TypedDataObjectFactory<MimicEnchantPower> DATA_FACTORY =
+            TypedDataObjectFactory.simple(
+                    new SerializableData()
+                            .add("enchantment", SerializableDataTypes.ENCHANTMENT, null)
+                            .add("level", SerializableDataTypes.INT, 1),
+                    data -> new MimicEnchantPower(
+                            data.get("enchantment"),
+                            data.getInt("level")
+                    ),
+                    (power, serializableData) -> serializableData.instance()
+                            .set("enchantment", power.enchantment)
+                            .set("level", power.level)
+            );
+
+    // -------------------------
+    // CONFIG
+    // -------------------------
+    @SuppressWarnings("unchecked")
+    public static final PowerConfiguration<PowerType> CONFIG =
+            (PowerConfiguration<PowerType>) (PowerConfiguration<?>)
+                    PowerConfiguration.of(
+                            MobOriginsMod.id("mimic_enchant"),
+                            DATA_FACTORY
+                    );
+
+    @Override
+    public @NotNull PowerConfiguration<?> getConfig() {
+        return CONFIG;
     }
 }

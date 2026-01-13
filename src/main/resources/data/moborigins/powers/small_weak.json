@@ -1,19 +1,23 @@
 {
   "type": "apoli:conditioned_attribute",
+
   "modifiers": [
     {
-      "attribute": "generic.attack_damage",
-      "operation": "multiply_total",
-      "value": -0.95,
+      "id": "small_slime_damage_penalty",
+      "attribute": "minecraft:generic.attack_damage",
+      "operation": "ADD_MULTIPLIED_TOTAL",
+      "amount": -0.95,
       "name": "small slime modifier"
     },
     {
-      "attribute": "generic.attack_knockback",
-      "operation": "addition",
-      "value": 2.5,
+      "id": "small_slime_knockback_bonus",
+      "attribute": "minecraft:generic.attack_knockback",
+      "operation": "ADD_VALUE",
+      "amount": 2.5,
       "name": "small slime modifier"
     }
   ],
+
   "condition": {
     "type": "apoli:health",
     "comparison": "<=",

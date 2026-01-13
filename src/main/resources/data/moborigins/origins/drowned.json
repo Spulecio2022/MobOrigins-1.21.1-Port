@@ -1,4 +1,6 @@
 {
+  "name": "Drowned",
+  "description": "A reanimated oceanic corpse with a talent for tridents and underwater combat.",
   "powers": [
     "moborigins:trident_expert",
     "moborigins:water_vision",
@@ -9,7 +11,10 @@
     "moborigins:surface_slowness",
     "origins:carnivore"
   ],
-  "icon": "minecraft:trident",
+  "entity_group": "undead",
+  "icon": {
+    "id": "minecraft:trident"
+  },
   "order": 2,
   "impact": 1
 }

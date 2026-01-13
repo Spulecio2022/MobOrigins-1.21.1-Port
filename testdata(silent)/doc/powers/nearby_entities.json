@@ -1,0 +1,29 @@
+{
+  "type": "origins:self_glow",
+  "use_teams": false,
+  "red": 1.0,
+  "green": 0.0,
+  "blue": 0.0,
+  "condition": {
+    "type": "apoli:amount",
+    "bientity_condition": {
+      "type": "apoli:and",
+      "conditions": [
+        {
+          "type": "apoli:distance",
+          "comparison": "<=",
+          "compare_to": 3.0
+        },
+        {
+          "type": "apoli:target_condition",
+          "condition": {
+            "type": "apoli:entity_group",
+            "group": "undead"
+          }
+        }
+      ]
+    },
+    "comparison": ">=",
+    "compare_to": 3
+  }
+}

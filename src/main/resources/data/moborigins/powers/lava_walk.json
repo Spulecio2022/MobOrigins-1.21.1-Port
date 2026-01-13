@@ -1,5 +1,6 @@
 {
   "type": "apoli:multiple",
+
   "lava_walking": {
     "type": "apoli:walk_on_fluid",
     "fluid": "minecraft:lava",
@@ -10,6 +11,7 @@
       "compare_to": 0.4
     }
   },
+
   "no_lava_fall_damage": {
     "type": "apoli:invulnerability",
     "damage_condition": {
@@ -27,14 +29,18 @@
       }
     }
   },
+
   "speed": {
     "type": "apoli:conditioned_attribute",
-    "modifier": {
-      "attribute": "generic.movement_speed",
-      "operation": "addition",
-      "value": 0.145,
-      "name": "strider lava bonus"
-    },
+    "modifiers": [
+      {
+        "id": "strider_lava_speed_bonus",
+        "attribute": "minecraft:generic.movement_speed",
+        "operation": "ADD_VALUE",
+        "amount": 0.145,
+        "name": "strider lava bonus"
+      }
+    ],
     "condition": {
       "type": "apoli:in_block",
       "block_condition": {

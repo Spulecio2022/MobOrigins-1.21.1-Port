@@ -226,10 +226,6 @@ BiEntityActions.generate()
 BlockActions = DocumentationSource("src/main/java/me/ultrusmods/moborigins/action/block", "docs/actions/block", "block_actions")
 BlockActions.generate()
 
-BlockConditions = SingleFileDocumentationSource(
-    "src/main/java/me/ultrusmods/moborigins/condition/block/MobOriginsBlockConditions.java", "docs/conditions/block",
-    "block_conditions")
-BlockConditions.generate()
 DamageConditions = SingleFileDocumentationSource(
     "src/main/java/me/ultrusmods/moborigins/condition/damage/MobOriginsDamageConditions.java", "docs/conditions/damage",
     "damage_conditions")

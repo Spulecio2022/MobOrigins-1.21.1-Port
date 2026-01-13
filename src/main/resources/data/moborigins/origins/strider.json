@@ -1,4 +1,6 @@
 {
+  "name": "Strider",
+  "description": "A lava‑walking creature of the Nether, slow on land but perfectly adapted to molten terrain.",
   "powers": [
     "origins:fire_immunity",
     "origins:nether_spawn",
@@ -7,9 +9,17 @@
     "moborigins:surface_slowness",
     "moborigins:rideable_creature",
     "moborigins:strider_shake",
-    "moborigins:warped_fungus_eater"
+    "moborigins:warped_fungus_eater",
+    "moborigins:fire_protection_level_1",
+    "moborigins:fire_protection_level_2",
+    "moborigins:fire_protection_level_3",
+    "moborigins:fire_protection_level_4",
+    "moborigins:leather_armor_bonus",
+    "moborigins:holding_ice_bonus"
   ],
-  "icon": "minecraft:warped_fungus_on_a_stick",
+  "icon": {
+    "id": "minecraft:warped_fungus_on_a_stick"
+  },
   "order": 4,
   "impact": 3
 }

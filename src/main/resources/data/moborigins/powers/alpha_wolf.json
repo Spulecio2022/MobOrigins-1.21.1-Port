@@ -1,5 +1,6 @@
 {
   "type": "apoli:multiple",
+
   "tame": {
     "type": "moborigins:action_on_entity_tame",
     "bientity_condition": {
@@ -17,6 +18,7 @@
       }
     }
   },
+
   "breed": {
     "type": "moborigins:action_on_breed_animal",
     "bientity_condition": {

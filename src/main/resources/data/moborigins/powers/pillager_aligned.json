@@ -1,5 +1,6 @@
 {
   "type": "apoli:multiple",
+
   "enemy_of_villagers": {
     "type": "apoli:prevent_entity_use",
     "bientity_condition": {
@@ -10,11 +11,15 @@
       }
     }
   },
+
   "neutral_illagers": {
     "type": "moborigins:remove_mob_hostility",
-    "entity_condition": {
-      "type": "origins:in_tag",
-      "tag": "moborigins:illagers"
+    "bientity_condition": {
+      "type": "apoli:target_condition",
+      "condition": {
+        "type": "apoli:in_tag",
+        "tag": "moborigins:illagers"
+      }
     }
   }
 }

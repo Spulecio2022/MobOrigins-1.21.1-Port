@@ -1,66 +1,93 @@
 package me.ultrusmods.moborigins.power;
 
-import io.github.apace100.apoli.power.ModelColorPower;
-import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.power.factory.PowerFactory;
+import io.github.apace100.apoli.condition.EntityCondition;
+import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.data.TypedDataObjectFactory;
+import io.github.apace100.apoli.power.PowerConfiguration;
+import io.github.apace100.apoli.power.type.PowerType;
 import io.github.apace100.calio.data.SerializableData;
-import io.github.apace100.calio.data.SerializableDataTypes;
 import me.ultrusmods.moborigins.MobOriginsMod;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.color.world.BiomeColors;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.biome.Biome;
+import org.jetbrains.annotations.NotNull;
 
-/** {DOCS}
-    NAME: Biome Model Color
-    DESC: Changes the entity's model color to the biomes grass color.
-    PARAMS:
-        - {alpha} {float} {https://origins.readthedocs.io/en/latest/types/data_types/float/} {1.0}  {The alpha value of the color.}
-    EXAMPLE:
-    {
-      "type": "moborigins:biome_model_color",
-      "alpha": 0.5
-    }
-    POWER_DESC: Changes the entity's model color to the biomes grass color with an alpha value of 0.5.
- */
-public class BiomeModelColorPower extends ModelColorPower {
-    public BiomeModelColorPower(PowerType<?> type, LivingEntity entity, float alpha) {
-        super(type, entity, 1f, 1f, 1f, alpha);
+import java.util.Optional;
+
+public class BiomeModelColorPower extends PowerType {
+
+    public static final TypedDataObjectFactory<BiomeModelColorPower> DATA_FACTORY =
+            PowerType.createConditionedDataFactory(
+                    new SerializableData()
+                            .add("alpha", ApoliDataTypes.NORMALIZED_FLOAT, 1.0F),
+                    (data, condition) -> new BiomeModelColorPower(
+                            data.get("alpha"),
+                            condition
+                    ),
+                    (power, serializableData) -> serializableData.instance()
+                            .set("alpha", power.alpha)
+            );
+
+    @SuppressWarnings("unchecked")
+    public static final PowerConfiguration<PowerType> CONFIG =
+            (PowerConfiguration<PowerType>) (PowerConfiguration<?>)
+                    new PowerConfiguration<>(
+                    MobOriginsMod.id("biome_model_color"),
+                    DATA_FACTORY
+            );
+
+    private final float alpha;
+
+    public BiomeModelColorPower(float alpha, Optional<EntityCondition> condition) {
+        super(condition);
+        this.alpha = alpha;
     }
 
     @Override
+    public @NotNull PowerConfiguration<?> getConfig() {
+        return CONFIG;
+    }
+
+    private int getGrassColor(Entity holder) {
+        var client = Minecraft.getInstance();
+        if (client.level == null) return 0xFFFFFF;
+
+        var pos = holder.blockPosition();
+        Biome biome = client.level.getBiome(pos).value();
+
+        // Mojang mappings: grass color is computed directly from the biome
+        return biome.getGrassColor(pos.getX(), pos.getZ());
+    }
+
     public float getRed() {
-           if (entity.getWorld().isClient()) {
-               return (float)(MinecraftClient.getInstance().world.getColor(entity.getBlockPos(), BiomeColors.GRASS_COLOR) >> 16 & 0xFF)/255F;
-           } else {
-                return super.getRed();
-           }
+        Entity holder = getHolder();
+        if (holder == null || !holder.level().isClientSide()) return 1f;
+
+        int color = getGrassColor(holder);
+        return ((color >> 16) & 0xFF) / 255f;
     }
 
-    @Override
     public float getGreen() {
-        if (entity.getWorld().isClient()) {
-            return (float)(MinecraftClient.getInstance().world.getColor(entity.getBlockPos(), BiomeColors.GRASS_COLOR) >> 8 & 0xFF)/255F;
-        } else {
-            return super.getGreen();
-        }
+        Entity holder = getHolder();
+        if (holder == null || !holder.level().isClientSide()) return 1f;
+
+        int color = getGrassColor(holder);
+        return ((color >> 8) & 0xFF) / 255f;
     }
 
-    @Override
     public float getBlue() {
-        if (entity.getWorld().isClient()) {
-            return (float)((MinecraftClient.getInstance().world.getColor(entity.getBlockPos(), BiomeColors.GRASS_COLOR)) & 0xFF)/255F;
-        } else {
-            return super.getBlue();
-        }
+        Entity holder = getHolder();
+        if (holder == null || !holder.level().isClientSide()) return 1f;
+
+        int color = getGrassColor(holder);
+        return (color & 0xFF) / 255f;
     }
 
-    public static PowerFactory createFactory() {
-        return new PowerFactory<>(MobOriginsMod.id("biome_model_color"),
-                new SerializableData()
-                        .add("alpha", SerializableDataTypes.FLOAT, 1.0F),
-                data ->
-                        (type, player) ->
-                                new BiomeModelColorPower(type, player, data.getFloat("alpha")))
-                .allowCondition();
+    public float getAlpha() {
+        return alpha;
+    }
+
+    public boolean isTranslucent() {
+        return alpha < 1.0F;
     }
 }

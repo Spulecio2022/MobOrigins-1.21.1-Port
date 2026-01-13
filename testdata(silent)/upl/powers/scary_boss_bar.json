@@ -1,0 +1,8 @@
+{
+  "type": "apoli:boss_bar",
+  "color": "red",
+  "style": "notched_6",
+  "darken_sky": true,
+  "thicken_fog": true,
+  "value": "health / max_health"
+}

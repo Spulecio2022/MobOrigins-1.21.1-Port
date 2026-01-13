@@ -1,4 +1,6 @@
 {
+  "name": "Guardian",
+  "description": "A vigilant ocean dweller armed with natural defenses and unmatched underwater agility.",
   "powers": [
     "moborigins:guardian_spikes",
     "moborigins:guardian_ally",
@@ -8,7 +10,7 @@
     "origins:water_breathing",
     "origins:water_vision",
     "origins:aqua_affinity",
-    "origins:swim_speed",
+    "moborigins:guardian_swim",
     "origins:like_water",
     "origins:aquatic",
     "origins:conduit_power_on_land",
@@ -21,7 +23,9 @@
       "announcement": "text.moborigins.become_elder"
     }
   ],
-  "icon": "minecraft:prismarine_shard",
+  "icon": {
+    "id": "minecraft:prismarine_shard"
+  },
   "order": 6,
   "impact": 3
 }

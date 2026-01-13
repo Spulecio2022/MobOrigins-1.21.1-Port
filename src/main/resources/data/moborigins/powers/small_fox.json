@@ -1,9 +1,12 @@
 {
   "type": "apoli:attribute",
-  "modifier": {
-    "attribute": "minecraft:generic.max_health",
-    "value": -4.0,
-    "operation": "addition",
-    "name": "fox health removal"
-  }
+  "modifiers": [
+    {
+      "id": "small_fox_health_penalty",
+      "attribute": "minecraft:generic.max_health",
+      "operation": "ADD_VALUE",
+      "amount": -4.0,
+      "name": "fox health removal"
+    }
+  ]
 }

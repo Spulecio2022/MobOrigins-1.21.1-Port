@@ -1,4 +1,6 @@
 {
+  "name": "Witch",
+  "description": "A crafty spell‑slinger skilled with potions, rituals, and the subtle arts of the illagers.",
   "powers": [
     "moborigins:better_potions",
     "moborigins:potion_action",
@@ -6,7 +8,9 @@
     "moborigins:pillager_aligned",
     "moborigins:illager"
   ],
-  "icon": "minecraft:brewing_stand",
+  "icon": {
+    "id": "minecraft:brewing_stand"
+  },
   "order": 4,
   "impact": 2
 }

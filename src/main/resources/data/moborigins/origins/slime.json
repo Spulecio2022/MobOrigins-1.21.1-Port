@@ -1,4 +1,6 @@
 {
+  "name": "Slime",
+  "description": "A bouncy, squishy creature that splits apart and shrugs off falls with ease.",
   "powers": [
     "moborigins:bouncy",
     "moborigins:split",
@@ -7,7 +9,9 @@
     "moborigins:slimy_color",
     "moborigins:dyeable"
   ],
-  "icon": "minecraft:slime_ball",
+  "icon": {
+    "id": "minecraft:slime_ball"
+  },
   "impact": 1,
   "order": 3
 }

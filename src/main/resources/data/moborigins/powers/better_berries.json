@@ -1,17 +1,20 @@
 {
   "type": "apoli:modify_food",
+
   "item_condition": {
     "type": "apoli:ingredient",
     "ingredient": {
       "item": "minecraft:sweet_berries"
     }
   },
+
   "food_modifier": {
-    "operation": "addition",
-    "value": 2.0
+    "operation": "add_total_early",
+    "amount": 2.0
   },
+
   "saturation_modifier": {
-    "operation": "addition",
-    "value": 1.0
+    "operation": "add_total_early",
+    "amount": 1.0
   }
 }

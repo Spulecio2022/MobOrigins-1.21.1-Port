@@ -1,25 +1,18 @@
+/*
 package me.ultrusmods.moborigins.register;
 
-import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
+import net.minecraft.core.Registry;
 import me.ultrusmods.moborigins.condition.entity.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.registry.Registry;
 
 public class MobOriginsEntityConditionFactories {
 
     public static void register() {
-        register(NearbyEntitiesCondition.createFactory());
-        register(InRaidAreaCondition.createFactory());
-        register(TimeSinceRestCondition.createFactory()); //TODO: Make this into a general stat condition
-        register(IsFullMoonCondition.createFactory());
-        register(HasItemCooldown.createFactory());
-        register(CameraCondition.createFactory());
-
-
+        Registry.register(ApoliRegistries.ENTITY_CONDITION_TYPE, NearbyEntitiesCondition.ID, NearbyEntitiesCondition.TYPE);
+        Registry.register(ApoliRegistries.ENTITY_CONDITION_TYPE, InRaidAreaCondition.ID, InRaidAreaCondition.TYPE);
+        Registry.register(ApoliRegistries.ENTITY_CONDITION_TYPE, TimeSinceRestCondition.ID, TimeSinceRestCondition.TYPE);
+        Registry.register(ApoliRegistries.ENTITY_CONDITION_TYPE, IsFullMoonCondition.ID, IsFullMoonCondition.TYPE);
+        Registry.register(ApoliRegistries.ENTITY_CONDITION_TYPE, HasItemCooldownCondition.ID, HasItemCooldownCondition.TYPE);
+        Registry.register(ApoliRegistries.ENTITY_CONDITION_TYPE, CameraCondition.ID, CameraCondition.TYPE);
     }
-
-    private static void register(ConditionFactory<Entity> serializer) {
-        Registry.register(ApoliRegistries.ENTITY_CONDITION, serializer.getSerializerId(), serializer);
-    }
-}
+}*/

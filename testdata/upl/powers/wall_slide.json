@@ -1,8 +1,0 @@
-{
-  "type": "moborigins:wall_sliding",
-  "fall_speed": 0.04,
-  "block_condition": {
-    "type": "moborigins:is_air",
-    "inverted": true
-  }
-}

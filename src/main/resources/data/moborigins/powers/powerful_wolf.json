@@ -2,16 +2,18 @@
   "type": "apoli:attribute",
   "modifiers": [
     {
-      "name": "Wolf Origin Bonus",
+      "id": "wolf_health_bonus",
       "attribute": "minecraft:generic.max_health",
-      "value": 10.0,
-      "operation": "addition"
+      "operation": "ADD_VALUE",
+      "amount": 10.0,
+      "name": "Wolf Origin Bonus"
     },
     {
-      "name": "Wolf Origin Bonus",
+      "id": "wolf_damage_bonus",
       "attribute": "minecraft:generic.attack_damage",
-      "value": 2.0,
-      "operation": "addition"
+      "operation": "ADD_VALUE",
+      "amount": 2.0,
+      "name": "Wolf Origin Bonus"
     }
   ]
 }

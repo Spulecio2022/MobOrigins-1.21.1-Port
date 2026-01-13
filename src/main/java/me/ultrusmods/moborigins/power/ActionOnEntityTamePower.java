@@ -1,75 +1,67 @@
 package me.ultrusmods.moborigins.power;
 
-import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.power.Power;
-import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.power.factory.PowerFactory;
+import io.github.apace100.apoli.action.BiEntityAction;
+import io.github.apace100.apoli.condition.BiEntityCondition;
+import io.github.apace100.apoli.condition.EntityCondition;
+import io.github.apace100.apoli.data.TypedDataObjectFactory;
+import io.github.apace100.apoli.power.PowerConfiguration;
+import io.github.apace100.apoli.power.type.PowerType;
 import io.github.apace100.calio.data.SerializableData;
 import me.ultrusmods.moborigins.MobOriginsMod;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.Pair;
+import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.Optional;
 
-/** {DOCS}
-    NAME: Action On Entity Tame
+public class ActionOnEntityTamePower extends PowerType {
 
-    DESC: This power type allows you to run a bi-entity action when you tame a mob, on the tamer (Actor) and the tamed mob (Target).
+    public static final TypedDataObjectFactory<ActionOnEntityTamePower> DATA_FACTORY =
+            PowerType.createConditionedDataFactory(
+                    new SerializableData()
+                            .add("bientity_action", BiEntityAction.DATA_TYPE.optional(), Optional.empty())
+                            .add("bientity_condition", BiEntityCondition.DATA_TYPE.optional(), Optional.empty()),
+                    (data, condition) -> new ActionOnEntityTamePower(
+                            data.get("bientity_action"),
+                            data.get("bientity_condition"),
+                            condition
+                    ),
+                    (power, serializableData) -> serializableData.instance()
+                            .set("bientity_action", power.biEntityAction)
+                            .set("bientity_condition", power.biEntityCondition)
+            );
 
-    PARAMS:
-    - {bientity_action} {Bi-entity Action Type} {https://origins.readthedocs.io/en/latest/types/bientity_action_types/} {optional} {This is a bi-entity action with the actor, the player, and the target, the animal you tamed.}
-    - {bientity_condition} {Bi-entity Condition Type} {https://origins.readthedocs.io/en/latest/types/bientity_condition_types/} {optional} {This is a bi-entity condtion with the actor, the player, and the target, the animal you tamed.}
+    public static final PowerConfiguration<PowerType> CONFIG =
+            (PowerConfiguration<PowerType>) (PowerConfiguration<?>)
+                    new PowerConfiguration<>(
+                            MobOriginsMod.id("action_on_entity_tame"),
+                            DATA_FACTORY
+                    );
 
-    EXAMPLE:
-{
-  "type": "moborigins:action_on_entity_tame",
-  "bientity_condition": {
-    "type": "origins:target_condition",
-    "condition": {
-      "type": "origins:entity_type",
-      "entity_type": "minecraft:cat"
-    }
-  },
-  "bientity_action": {
-    "type": "origins:target_action",
-    "action": {
-      "type": "origins:explode",
-      "power": 10
-    }
-  }
-}
+    private final Optional<BiEntityAction> biEntityAction;
+    private final Optional<BiEntityCondition> biEntityCondition;
 
-    POWER_DESC: This power will make it so when you tame a cat, it explodes.
- */
-public class ActionOnEntityTamePower extends Power {
-    private final Consumer<Pair<Entity, Entity>> biEntityAction;
-    private final Predicate<Pair<Entity, Entity>> bientityCondition;
-
-    public ActionOnEntityTamePower(PowerType<?> type, LivingEntity entity, Consumer<Pair<Entity, Entity>> biEntityAction, Predicate<Pair<Entity, Entity>> bientityCondition) {
-        super(type, entity);
+    public ActionOnEntityTamePower(Optional<BiEntityAction> biEntityAction,
+                                   Optional<BiEntityCondition> biEntityCondition,
+                                   @NotNull Optional<EntityCondition> condition) {
+        super(condition);
         this.biEntityAction = biEntityAction;
-        this.bientityCondition = bientityCondition;
+        this.biEntityCondition = biEntityCondition;
     }
 
+    @Override
+    public @NotNull PowerConfiguration<?> getConfig() {
+        return CONFIG;
+    }
+
+    /** Checks whether the power should run for this (player, tamed) pair */
     public boolean shouldExecute(Entity tamed) {
-        return bientityCondition == null || bientityCondition.test(new Pair<>(entity, tamed));
+        Entity player = getHolder();
+        return biEntityCondition.map(cond -> cond.test(player, tamed)).orElse(true);
     }
 
+    /** Executes the bi-entity action on (player, tamed) */
     public void executeAction(Entity tamed) {
-        if (biEntityAction != null) {
-            biEntityAction.accept(new Pair<>(entity, tamed));
-        }
-    }
-
-    public static PowerFactory createFactory() {
-        return new PowerFactory<>(MobOriginsMod.id("action_on_entity_tame"),
-                new SerializableData()
-                        .add("bientity_action", ApoliDataTypes.BIENTITY_ACTION, null)
-                        .add("bientity_condition", ApoliDataTypes.BIENTITY_CONDITION, null),
-                data ->
-                        (type, player) -> new ActionOnEntityTamePower(type, player, data.get("bientity_action"), data.get("bientity_condition")))
-                .allowCondition();
+        Entity player = getHolder();
+        biEntityAction.ifPresent(action -> action.execute(player, tamed));
     }
 }

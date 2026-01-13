@@ -1,18 +1,23 @@
 {
   "type": "apoli:multiple",
+
   "half": {
     "type": "origins:conditioned_attribute",
     "modifiers": [
       {
+        "id": "snowgolem_half_health",
+        "type": "apoli:attribute",
         "attribute": "minecraft:generic.max_health",
-        "operation": "addition",
-        "value": -4,
+        "operation": "ADD_VALUE",
+        "amount": -4,
         "name": "snowgolem health decrease half"
       },
       {
+        "id": "snowgolem_half_speed",
+        "type": "apoli:attribute",
         "attribute": "minecraft:generic.movement_speed",
-        "operation": "addition",
-        "value": -0.02,
+        "operation": "ADD_VALUE",
+        "amount": -0.02,
         "name": "snowgolem speed decrease half"
       }
     ],
@@ -24,19 +29,24 @@
       "compare_to": 50
     }
   },
+
   "full": {
     "type": "origins:conditioned_attribute",
     "modifiers": [
       {
+        "id": "snowgolem_full_health",
+        "type": "apoli:attribute",
         "attribute": "minecraft:generic.max_health",
-        "operation": "addition",
-        "value": -4,
+        "operation": "ADD_VALUE",
+        "amount": -4,
         "name": "snowgolem health decrease full"
       },
       {
+        "id": "snowgolem_full_speed",
+        "type": "apoli:attribute",
         "attribute": "minecraft:generic.movement_speed",
-        "operation": "addition",
-        "value": -0.02,
+        "operation": "ADD_VALUE",
+        "amount": -0.02,
         "name": "snowgolem speed decrease full"
       }
     ],

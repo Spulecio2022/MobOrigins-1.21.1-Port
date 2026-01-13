@@ -1,11 +1,15 @@
 {
+  "name": "Evoker",
+  "description": "A master of fang‑summoning magic and illager arts, feared for deadly conjurations.",
   "powers": [
     "moborigins:summon_fangs",
     "moborigins:lower_totem_chance",
     "moborigins:pillager_aligned",
     "moborigins:illager"
   ],
-  "icon": "minecraft:totem_of_undying",
+  "icon": {
+    "id": "minecraft:totem_of_undying"
+  },
   "order": 4,
   "impact": 2
 }

@@ -1,0 +1,11 @@
+{
+  "type": "moborigins:wall_sliding",
+  "fall_speed": 0.04,
+  "block_condition": {
+    "type": "apoli:block_state",
+    "state": {
+      "air": true
+    },
+    "inverted": true
+  }
+}

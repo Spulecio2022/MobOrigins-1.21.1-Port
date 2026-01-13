@@ -1,36 +1,35 @@
 package me.ultrusmods.moborigins.power;
 
-import io.github.apace100.apoli.power.Power;
-import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.power.factory.PowerFactory;
+import io.github.apace100.apoli.data.TypedDataObjectFactory;
+import io.github.apace100.apoli.power.PowerConfiguration;
+import io.github.apace100.apoli.power.type.PowerType;
 import io.github.apace100.calio.data.SerializableData;
 import me.ultrusmods.moborigins.MobOriginsMod;
-import net.minecraft.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
 
-/** {DOCS}
-    NAME: Walk on Powder Snow
+public class PowderSnowPower extends PowerType {
 
-    DESC: This power type allows you to walk on powder snow.
-
-    PARAMS:
-
-    EXAMPLE:
-{
-    "type": "moborigins:walk_on_powder_snow"
-}
-
-    POWER_DESC: This lets you walk on powder snow.
- */
-public class PowderSnowPower extends Power {
-    public PowderSnowPower(PowerType<?> type, LivingEntity entity) {
-        super(type, entity);
+    public PowderSnowPower() {
+        super();
     }
 
-    public static PowerFactory createFactory() {
-        return new PowerFactory<>(MobOriginsMod.id("walk_on_powder_snow"),
-                new SerializableData(),
-                data ->
-                        PowderSnowPower::new)
-                .allowCondition();
+    public static final TypedDataObjectFactory<PowderSnowPower> DATA_FACTORY =
+            TypedDataObjectFactory.simple(
+                    new SerializableData(),
+                    data -> new PowderSnowPower(),
+                    (power, serializableData) -> null   // MUST return something
+            );
+
+    @SuppressWarnings("unchecked")
+    public static final PowerConfiguration<PowerType> CONFIG =
+            (PowerConfiguration<PowerType>) (PowerConfiguration<?>)
+                    PowerConfiguration.of(
+                            MobOriginsMod.id("walk_on_powder_snow"),
+                            DATA_FACTORY
+                    );
+
+    @Override
+    public @NotNull PowerConfiguration<?> getConfig() {
+        return CONFIG;
     }
 }

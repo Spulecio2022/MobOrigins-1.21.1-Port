@@ -5,9 +5,7 @@
     "entity_action": {
       "type": "origins:and",
       "actions": [
-        {
-          "type": "moborigins:consume_dye"
-        },
+        { "type": "moborigins:consume_dye" },
         {
           "type": "moborigins:set_item_cooldown",
           "ticks": 20,
@@ -16,29 +14,18 @@
       ]
     },
     "cooldown": 1,
-    "hud_render": {
-      "should_render": false
-    },
+    "hud_render": { "should_render": false },
     "key": {
       "key": "key.use",
       "continuous": true
     },
     "condition": {
-      "type": "origins:and",
-      "conditions": [
-        {
-          "type": "apoli:equipped_item",
-          "equipment_slot": "mainhand",
-          "item_condition": {
-            "type": "moborigins:is_dye"
-          }
-        },
-        {
-          "type": "moborigins:has_item_cooldown",
-          "hand": "MAIN_HAND",
-          "inverted": true
-        }
-      ]
+      "type": "apoli:equipped_item",
+      "equipment_slot": "mainhand",
+      "item_condition": {
+        "type": "apoli:ingredient",
+        "ingredient": { "tag": "c:dyes" }
+      }
     }
   },
   "wash_dye": {
@@ -47,9 +34,7 @@
       "type": "apoli:block",
       "block": "minecraft:water_cauldron"
     },
-    "block_action": {
-      "type": "moborigins:decrement_cauldron_fluid"
-    },
+    "block_action": { "type": "moborigins:decrement_cauldron_fluid" },
     "entity_action": {
       "type": "moborigins:set_dyeable_model_color",
       "red": 0.60,

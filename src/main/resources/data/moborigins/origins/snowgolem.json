@@ -1,4 +1,6 @@
 {
+  "name": "Snow Golem",
+  "description": "A frosty construct vulnerable to heat but empowered by cold, leaving snow in its wake.",
   "powers": [
     "origins:water_vulnerability",
     "moborigins:temperature",
@@ -8,7 +10,9 @@
     "moborigins:snow_trail",
     "moborigins:frigid_strength"
   ],
-  "icon": "minecraft:snowball",
+  "icon": {
+    "id": "minecraft:snowball"
+  },
   "order": 4,
   "impact": 3
 }

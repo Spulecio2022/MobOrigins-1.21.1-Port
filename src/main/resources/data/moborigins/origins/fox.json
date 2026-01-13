@@ -1,4 +1,6 @@
 {
+  "name": "Fox",
+  "description": "A nimble forest creature with quick paws, sharp instincts, and a knack for gathering.",
   "powers": [
     "moborigins:timid_creature",
     "moborigins:better_berries",
@@ -7,7 +9,9 @@
     "moborigins:sly",
     "moborigins:small_fox"
   ],
-  "icon": "minecraft:sweet_berries",
+  "icon": {
+    "id": "minecraft:sweet_berries"
+  },
   "order": 2,
   "impact": 1
 }

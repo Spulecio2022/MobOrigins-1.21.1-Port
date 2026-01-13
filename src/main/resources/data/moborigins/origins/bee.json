@@ -1,4 +1,6 @@
 {
+  "name": "Bee",
+  "description": "Small, buzzing, and full of honey-fueled energy.",
   "powers": [
     "moborigins:stinger",
     "moborigins:flower_power",
@@ -7,7 +9,10 @@
     "moborigins:bee_wings",
     "origins:vegetarian"
   ],
-  "icon": "minecraft:honeycomb",
+  "entity_group": "arthropod",
+  "icon": {
+    "id": "minecraft:honeycomb"
+  },
   "order": 4,
   "impact": 2
 }

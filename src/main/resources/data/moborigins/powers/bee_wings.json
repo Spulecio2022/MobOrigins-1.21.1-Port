@@ -5,11 +5,16 @@
     "actions": [
       {
         "type": "apoli:apply_effect",
-        "effect": {
-          "effect": "minecraft:slow_falling",
-          "duration": 100,
-          "amplifier": 0
-        }
+        "effects": [
+          {
+            "id": "minecraft:slow_falling",
+            "duration": 100,
+            "amplifier": 0,
+            "ambient": false,
+            "show_particles": true,
+            "show_icon": true
+          }
+        ]
       },
       {
         "type": "apoli:exhaust",

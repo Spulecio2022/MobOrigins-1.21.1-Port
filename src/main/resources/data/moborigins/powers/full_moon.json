@@ -1,25 +1,27 @@
 {
   "type": "apoli:conditioned_attribute",
+
   "modifiers": [
     {
-      "attribute": "generic.movement_speed",
-      "operation": "addition",
-      "value": 0.07,
-      "name": "full moon wolf bonus"
+      "id": "moonlight_speed",
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "ADD_VALUE",
+      "amount": 0.07
     },
     {
-      "attribute": "generic.max_health",
-      "operation": "addition",
-      "value": 4.0,
-      "name": "full moon wolf bonus"
+      "id": "moonlight_health",
+      "attribute": "minecraft:generic.max_health",
+      "operation": "ADD_VALUE",
+      "amount": 4.0
     },
     {
-      "attribute": "generic.attack_damage",
-      "operation": "addition",
-      "value": 2.0,
-      "name": "full moon wolf bonus"
+      "id": "moonlight_damage",
+      "attribute": "minecraft:generic.attack_damage",
+      "operation": "ADD_VALUE",
+      "amount": 2.0
     }
   ],
+
   "condition": {
     "type": "apoli:and",
     "conditions": [
@@ -28,7 +30,11 @@
         "inverted": true
       },
       {
-        "type": "moborigins:is_full_moon"
+        "type": "apoli:exposed_to_sun",
+        "inverted": true
+      },
+      {
+        "type": "apoli:exposed_to_sky"
       }
     ]
   }

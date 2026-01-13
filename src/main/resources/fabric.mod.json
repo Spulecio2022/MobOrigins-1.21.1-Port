@@ -17,22 +17,23 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "me.ultrusmods.moborigins.client.MobOriginsClient"
+      "me.ultrusmods.moborigins.client.entity.MobOriginsClient"
     ],
     "main": [
       "me.ultrusmods.moborigins.MobOriginsMod"
-    ],
-    "preLaunch": [
-      "me.ultrusmods.moborigins.MobOriginsPreLaunch"
     ]
   },
   "mixins": [
     "moborigins.mixins.json"
   ],
+  "pack": {
+    "type": "data",
+    "value": "builtin"
+  },
   "depends": {
-    "fabricloader": ">=0.11.1",
-    "fabric": ">=0.29.4",
-    "minecraft": ">=1.19.4",
-    "origins": ">=1.9.0"
+    "fabricloader": ">=0.15.0",
+    "fabric": "*",
+    "minecraft": ">=1.21.1",
+    "origins": ">=1.13.0-pre.1+mc.1.21.1"
   }
 }

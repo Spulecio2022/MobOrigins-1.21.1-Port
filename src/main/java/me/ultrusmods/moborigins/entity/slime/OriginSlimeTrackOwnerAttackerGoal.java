@@ -1,12 +1,12 @@
 package me.ultrusmods.moborigins.entity.slime;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.ai.goal.TrackTargetGoal;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.target.TargetGoal;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 
 import java.util.EnumSet;
 
-public class OriginSlimeTrackOwnerAttackerGoal extends TrackTargetGoal {
+public class OriginSlimeTrackOwnerAttackerGoal extends TargetGoal {
     private final OriginSlimeEntity tameable;
     private LivingEntity attacker;
     private int lastAttackedTime;
@@ -14,25 +14,32 @@ public class OriginSlimeTrackOwnerAttackerGoal extends TrackTargetGoal {
     public OriginSlimeTrackOwnerAttackerGoal(OriginSlimeEntity tameable) {
         super(tameable, false);
         this.tameable = tameable;
-        this.setControls(EnumSet.of(Control.TARGET));
+        this.setFlags(EnumSet.of(Flag.TARGET));
     }
 
-    public boolean canStart() {
-        LivingEntity livingEntity = this.tameable.getOwner();
-        if (livingEntity == null) {
+    @Override
+    public boolean canUse() {
+        LivingEntity owner = this.tameable.getOwner();
+        if (owner == null) {
             return false;
-        } else {
-            this.attacker = livingEntity.getAttacker();
-            int i = livingEntity.getLastAttackedTime();
-            return i != this.lastAttackedTime && this.canTrack(this.attacker, TargetPredicate.DEFAULT) && this.tameable.canAttackWithOwner(this.attacker, livingEntity);
         }
+
+        this.attacker = owner.getLastHurtByMob();
+        int time = owner.getLastHurtByMobTimestamp();
+
+        return this.attacker != null
+                && time != this.lastAttackedTime
+                && this.canAttack(this.attacker, TargetingConditions.DEFAULT)
+                && this.tameable.canAttackWithOwner(this.attacker, owner);
     }
 
+    @Override
     public void start() {
         this.mob.setTarget(this.attacker);
-        LivingEntity livingEntity = this.tameable.getOwner();
-        if (livingEntity != null) {
-            this.lastAttackedTime = livingEntity.getLastAttackedTime();
+
+        LivingEntity owner = this.tameable.getOwner();
+        if (owner != null) {
+            this.lastAttackedTime = owner.getLastHurtByMobTimestamp();
         }
 
         super.start();

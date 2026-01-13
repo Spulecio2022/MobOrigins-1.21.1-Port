@@ -5,7 +5,9 @@
   "duration_per_stack": 60,
   "effects": [
     {
+      "id": "minecraft:weakness",
       "effect": "minecraft:weakness",
+      "duration": 60,
       "is_ambient": true,
       "show_particles": false,
       "show_icon": true

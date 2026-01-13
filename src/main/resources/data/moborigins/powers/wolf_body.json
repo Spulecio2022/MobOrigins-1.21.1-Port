@@ -1,9 +1,12 @@
 {
   "type": "apoli:attribute",
-  "modifier": {
-    "attribute": "minecraft:generic.max_health",
-    "value": -4.0,
-    "operation": "addition",
-    "name": "wolf health removal"
-  }
+  "modifiers": [
+    {
+      "id": "wolf_body_health_penalty",
+      "attribute": "minecraft:generic.max_health",
+      "operation": "ADD_VALUE",
+      "amount": -4.0,
+      "name": "wolf health removal"
+    }
+  ]
 }

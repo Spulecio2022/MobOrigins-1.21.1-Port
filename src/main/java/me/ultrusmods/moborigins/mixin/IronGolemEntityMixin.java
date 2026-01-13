@@ -1,27 +1,37 @@
 package me.ultrusmods.moborigins.mixin;
 
 import me.ultrusmods.moborigins.power.MobOriginsPowers;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.TargetGoal;
-import net.minecraft.entity.passive.GolemEntity;
-import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.world.World;
+
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.ai.goal.GoalSelector;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(IronGolemEntity.class)
-public class IronGolemEntityMixin extends GolemEntity {
+@Mixin(value = IronGolem.class, priority = 1000)
+public class IronGolemEntityMixin {
 
+    @Inject(method = "registerGoals", at = @At("TAIL"))
+    private void moborigins$addPillagerAlignedTargeting(CallbackInfo ci) {
+        IronGolem self = (IronGolem)(Object)this;
 
-    protected IronGolemEntityMixin(EntityType<? extends GolemEntity> entityType, World world) {
-        super(entityType, world);
-    }
+        GoalSelector selector =
+                ((MobTargetSelectorAccessor) self).moborigins$getTargetSelector();
 
-    @Inject(method = "initGoals", at = @At("TAIL"))
-    protected void initGoals$MobOrigins(CallbackInfo ci) {
-        this.targetSelector.add(3, new TargetGoal<>(this, LivingEntity.class, 5, true, false, MobOriginsPowers.PILLAGER_ALIGNED::isActive));
+        selector.addGoal(
+                3,
+                new NearestAttackableTargetGoal<>(
+                        self,
+                        LivingEntity.class,
+                        5,
+                        true,
+                        false,
+                        entity -> MobOriginsPowers.hasPower(entity, MobOriginsPowers.PILLAGER_ALIGNED)
+                )
+        );
     }
 }

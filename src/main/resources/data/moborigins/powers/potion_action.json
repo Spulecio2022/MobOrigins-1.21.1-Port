@@ -7,12 +7,11 @@
         "type": "apoli:if_else_list",
         "actions": [
           {
-            "condition": {
-              "type": "apoli:on_fire"
-            },
+            "condition": { "type": "apoli:on_fire" },
             "action": {
               "type": "apoli:apply_effect",
               "effect": {
+                "id": "minecraft:fire_resistance",
                 "effect": "minecraft:fire_resistance",
                 "duration": 200,
                 "amplifier": 0
@@ -28,6 +27,7 @@
             "action": {
               "type": "apoli:apply_effect",
               "effect": {
+                "id": "minecraft:slow_falling",
                 "effect": "minecraft:slow_falling",
                 "duration": 200,
                 "amplifier": 0
@@ -42,6 +42,7 @@
             "action": {
               "type": "apoli:apply_effect",
               "effect": {
+                "id": "minecraft:water_breathing",
                 "effect": "minecraft:water_breathing",
                 "duration": 200,
                 "amplifier": 0
@@ -56,6 +57,7 @@
             "action": {
               "type": "apoli:apply_effect",
               "effect": {
+                "id": "minecraft:speed",
                 "effect": "minecraft:speed",
                 "duration": 200,
                 "amplifier": 0

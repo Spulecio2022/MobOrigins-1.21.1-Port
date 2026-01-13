@@ -1,29 +1,37 @@
 package me.ultrusmods.moborigins.mixin;
 
 import me.ultrusmods.moborigins.power.MobOriginsPowers;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.projectile.thrown.SnowballEntity;
-import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.world.World;
+
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.entity.projectile.Snowball;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.EntityHitResult;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(SnowballEntity.class)
-public abstract class SnowballEntityMixin extends ThrownItemEntity {
-    public SnowballEntityMixin(EntityType<? extends ThrownItemEntity> entityType, World world) {
-        super(entityType, world);
+@Mixin(Snowball.class)
+public abstract class SnowballEntityMixin extends ThrowableItemProjectile {
+
+    public SnowballEntityMixin(EntityType<? extends ThrowableItemProjectile> type, Level level) {
+        super(type, level);
     }
 
-    @Inject(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
-    public void onEntityHit$MobOrigins(EntityHitResult entityHitResult, CallbackInfo ci) {
-        if (MobOriginsPowers.STRONGER_SNOWBALLS.isActive(((SnowballEntity)(Object)this).getOwner())) {
-            Entity entity = entityHitResult.getEntity();
-            entity.damage(this.getDamageSources().thrown(((SnowballEntity) (Object) this), this.getOwner()), 3);
+    @Inject(method = "onHitEntity", at = @At("TAIL"))
+    private void moborigins$strongerSnowballs(EntityHitResult hit, CallbackInfo ci) {
+        Snowball self = (Snowball)(Object)this;
+
+        if (MobOriginsPowers.hasPower(self.getOwner(), MobOriginsPowers.STRONGER_SNOWBALLS)) {
+            Entity target = hit.getEntity();
+
+            target.hurt(
+                    this.damageSources().thrown(self, self.getOwner()),
+                    3.0F
+            );
         }
     }
 }

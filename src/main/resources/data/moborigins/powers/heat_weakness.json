@@ -9,8 +9,6 @@
     "unblockable": true,
     "bypasses_armor": true
   },
-  "protection_enchantment": "moborigins:heat_protection",
-  "protection_effectiveness": 1.0,
   "condition": {
     "type": "apoli:resource",
     "resource": "moborigins:temperature",

@@ -1,75 +1,45 @@
 package me.ultrusmods.moborigins.mixin;
 
-
 import me.ultrusmods.moborigins.power.MobOriginsPowers;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.mob.RavagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.Ravager;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.List;
+import java.util.function.Predicate;
 
-@Mixin(RavagerEntity.class)
-public abstract class RavagerEntityMixin extends HostileEntity {
+@Mixin(Ravager.class)
+public abstract class RavagerEntityMixin extends Monster {
 
-    protected RavagerEntityMixin(EntityType<? extends HostileEntity> entityType, World world) {
-        super(entityType, world);
+    protected RavagerEntityMixin(EntityType<? extends Monster> type, Level level) {
+        super(type, level);
     }
 
-    @ModifyVariable(method = "roar()V", at = @At("STORE"), ordinal = 0)
-    private List<Entity> roar$MobOrigins(List<Entity> list) {
-        list.removeIf(MobOriginsPowers.PILLAGER_ALIGNED::isActive);
+    @Redirect(
+            method = "roar",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/level/Level;getEntitiesOfClass(Ljava/lang/Class;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;"
+            )
+    )
+    private List<LivingEntity> moborigins$filterAlignedEntities(
+            Level level,
+            Class<LivingEntity> entityClass,
+            AABB box,
+            Predicate<? super LivingEntity> predicate
+    ) {
+        List<LivingEntity> list = level.getEntitiesOfClass(entityClass, box, predicate);
+
+        list.removeIf(entity ->
+                MobOriginsPowers.hasPower(entity, MobOriginsPowers.PILLAGER_ALIGNED)
+        );
+
         return list;
     }
-
-
-    @Override
-    protected ActionResult interactMob(PlayerEntity player, Hand hand) {
-        if (!this.hasPassengers() && !player.shouldCancelInteraction() && MobOriginsPowers.PILLAGER_ALIGNED.isActive(player)) {
-            if (!this.getWorld().isClient) {
-                player.startRiding(this);
-            }
-
-            return ActionResult.success(this.getWorld().isClient);
-        } else {
-            return ActionResult.PASS;
-        }
-
-    }
-
-    @Override
-    public void travel(Vec3d movementInput) {
-        if (this.isAlive()) {
-            Entity entity = this.getPrimaryPassenger();
-            if (this.hasPassengers() && entity instanceof LivingEntity livingEntity && MobOriginsPowers.PILLAGER_ALIGNED.isActive(livingEntity)) {
-                this.setYaw(livingEntity.getYaw());
-                this.prevYaw = this.getYaw();
-                this.setPitch(livingEntity.getPitch() * 0.5F);
-                this.setRotation(this.getYaw(), this.getPitch());
-                this.bodyYaw = this.getYaw();
-                this.headYaw = this.bodyYaw;
-                float f = livingEntity.sidewaysSpeed * 0.5F;
-                float g = livingEntity.forwardSpeed;
-                if (this.isLogicalSideForUpdatingMovement()) {
-                    this.setMovementSpeed((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) / 2.0F);
-                    super.travel(new Vec3d(f, movementInput.y, g));
-                } else if (livingEntity instanceof PlayerEntity) {
-                    this.setVelocity(Vec3d.ZERO);
-                }
-                this.updateLimbs(false);
-            }
-        }
-        super.travel(movementInput);
-    }
 }
-

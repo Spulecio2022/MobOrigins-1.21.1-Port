@@ -1,51 +1,96 @@
 package me.ultrusmods.moborigins.mixin;
 
 import me.ultrusmods.moborigins.power.MobOriginsPowers;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.s2c.play.EntityPassengersUpdateS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.Box;
-import net.minecraft.world.World;
+
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.Level;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(PlayerEntity.class)
+@Mixin(Player.class)
 public abstract class PlayerEntityMixin extends LivingEntity {
+
     @Shadow public abstract boolean isSpectator();
 
-    protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
-        super(entityType, world);
+    protected PlayerEntityMixin(EntityType<? extends LivingEntity> type, Level level) {
+        super(type, level);
     }
-    // TODO: Look into this more at some point.
-    @Inject(method = "interact", at = @At(value = "HEAD"), cancellable = true)
-    public void interact(Entity entity, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-        if (entity instanceof PlayerEntity && MobOriginsPowers.RIDEABLE_CREATURE.isActive(entity)) {
-            if (!this.hasPassengers() && !((PlayerEntity)(Object)this).shouldCancelInteraction()) {
-                this.startRiding(entity);
-                cir.setReturnValue(ActionResult.success(this.getWorld().isClient));
-                if (!entity.getWorld().isClient && entity instanceof ServerPlayerEntity) {
-                    ((ServerPlayerEntity)entity).networkHandler.sendPacket(new EntityPassengersUpdateS2CPacket(entity));
+
+    @Inject(method = "interactOn", at = @At("HEAD"), cancellable = true)
+    private void moborigins$interact(Entity entity, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+
+        if (entity instanceof Player && MobOriginsPowers.hasPower(entity, MobOriginsPowers.RIDEABLE_CREATURE)) {
+            Player player = (Player)(Object)this;
+
+            if (!player.isVehicle() && !player.isSpectator()) {
+                player.startRiding(entity);
+                cir.setReturnValue(InteractionResult.sidedSuccess(player.level().isClientSide));
+
+                if (!entity.level().isClientSide && entity instanceof ServerPlayer serverPlayer) {
+                    serverPlayer.connection.send(new ClientboundSetPassengersPacket(entity));
                 }
             } else {
-                cir.setReturnValue(ActionResult.FAIL);
+                cir.setReturnValue(InteractionResult.FAIL);
             }
         }
     }
-    @ModifyVariable(method = "tickMovement", at = @At("STORE"), index = 2)
-    public Box tickMovement$MobOrigins(Box box2) {
-        if (MobOriginsPowers.ITEM_COLLECTOR.isActive(((PlayerEntity)(Object)this))) {
-            return box2.expand(2);
+
+    @ModifyArg(
+            method = "aiStep",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/phys/AABB;inflate(DDD)Lnet/minecraft/world/phys/AABB;"
+            ),
+            index = 0
+    )
+    private double moborigins$expandItemCollectorBoxX(double original) {
+        if (MobOriginsPowers.hasPower((Player)(Object)this, MobOriginsPowers.ITEM_COLLECTOR)) {
+            return original + 2.0;
         }
-        return box2;
+        return original;
     }
 
+    @ModifyArg(
+            method = "aiStep",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/phys/AABB;inflate(DDD)Lnet/minecraft/world/phys/AABB;"
+            ),
+            index = 1
+    )
+    private double moborigins$expandItemCollectorBoxY(double original) {
+        if (MobOriginsPowers.hasPower((Player)(Object)this, MobOriginsPowers.ITEM_COLLECTOR)) {
+            return original + 2.0;
+        }
+        return original;
+    }
+
+    @ModifyArg(
+            method = "aiStep",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/phys/AABB;inflate(DDD)Lnet/minecraft/world/phys/AABB;"
+            ),
+            index = 2
+    )
+    private double moborigins$expandItemCollectorBoxZ(double original) {
+        if (MobOriginsPowers.hasPower((Player)(Object)this, MobOriginsPowers.ITEM_COLLECTOR)) {
+            return original + 2.0;
+        }
+        return original;
+    }
 }

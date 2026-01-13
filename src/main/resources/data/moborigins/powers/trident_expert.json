@@ -1,5 +1,6 @@
 {
   "type": "apoli:multiple",
+
   "trident_melee": {
     "type": "apoli:modify_damage_dealt",
     "condition": {
@@ -7,54 +8,60 @@
       "equipment_slot": "mainhand",
       "item_condition": {
         "type": "apoli:ingredient",
-        "ingredient": {
-          "item": "minecraft:trident"
-        }
+        "ingredient": { "item": "minecraft:trident" }
       }
     },
-    "modifier": {
-      "name": "Extra Trident Damage",
-      "operation": "addition",
-      "value": 2.0
-    }
+    "modifiers": [
+      {
+        "name": "extra_trident_damage",
+        "operation": "add_total_early",
+        "amount": 2.0
+      }
+    ]
   },
+
   "trident_thrown": {
     "type": "apoli:modify_damage_dealt",
     "damage_condition": {
       "type": "apoli:projectile",
       "projectile": "minecraft:trident"
     },
-    "modifier": {
-      "name": "Extra Trident Damage",
-      "operation": "addition",
-      "value": 2.0
-    },
+    "modifiers": [
+      {
+        "name": "extra_trident_damage",
+        "operation": "add_total_early",
+        "amount": 2.0
+      }
+    ],
     "condition": {
-      "type": "origins:resource",
+      "type": "apoli:resource",
       "resource": "*:trident_expert_power",
       "comparison": ">",
       "compare_to": 0
     }
   },
+
   "riptide": {
     "type": "moborigins:riptide_override",
-    "trident_damage": "10",
+    "trident_damage": 10,
     "condition": {
-      "type": "origins:resource",
+      "type": "apoli:resource",
       "resource": "*:trident_expert_power",
       "comparison": ">",
       "compare_to": 0
     }
   },
+
   "channeling": {
     "type": "moborigins:channeling_override",
     "condition": {
-      "type": "origins:resource",
+      "type": "apoli:resource",
       "resource": "*:trident_expert_power",
       "comparison": ">",
       "compare_to": 0
     }
   },
+
   "active": {
     "type": "origins:active_self",
     "cooldown": 1200,
@@ -67,6 +74,7 @@
       "should_render": false
     }
   },
+
   "power": {
     "type": "origins:resource",
     "min": 0,
@@ -76,6 +84,7 @@
       "bar_index": 7
     }
   },
+
   "drain": {
     "type": "origins:action_over_time",
     "interval": 20,

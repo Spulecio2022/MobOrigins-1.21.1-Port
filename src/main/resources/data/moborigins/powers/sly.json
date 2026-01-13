@@ -1,9 +1,12 @@
 {
   "type": "apoli:attribute",
-  "modifier":  {
-      "attribute": "generic.movement_speed",
-      "operation": "addition",
-      "value": 0.06,
+  "modifiers": [
+    {
+      "id": "fox_sly_speed",
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "ADD_VALUE",
+      "amount": 0.06,
       "name": "fox sly bonus"
     }
+  ]
 }

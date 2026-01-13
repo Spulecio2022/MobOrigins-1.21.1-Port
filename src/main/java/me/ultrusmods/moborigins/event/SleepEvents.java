@@ -4,102 +4,127 @@ import io.github.apace100.apoli.component.PowerHolderComponent;
 import me.ultrusmods.moborigins.power.CustomSleepPower;
 import net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.minecraft.entity.Dismounting;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.DismountHelper;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionResult;
 
 import java.util.List;
 
-
 public class SleepEvents {
     public static void init() {
+
+        // When player right-clicks a block
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-            if (!world.isClient()) {
-                List<CustomSleepPower> powers = PowerHolderComponent.getPowers(player, CustomSleepPower.class);
-                if (powers.size() > 0) {
-                    for (CustomSleepPower customSleepPower : powers) {
-                        if (customSleepPower.doesApply(world, hitResult.getBlockPos())) {
-                            player.trySleep(hitResult.getBlockPos()).ifLeft(reason -> {
-                                if (reason != null && reason.toText() != null) {
-                                    player.sendMessage(reason.toText(), true);
-                                }
-                            });
-                            return ActionResult.SUCCESS;
-                        }
+            if (!world.isClientSide()) {
+
+                PowerHolderComponent component = PowerHolderComponent.getNullable(player);
+                List<CustomSleepPower> powers = component.getPowerTypes().stream()
+                        .filter(type -> type instanceof CustomSleepPower)
+                        .map(type -> (CustomSleepPower) type)
+                        .toList();
+
+                for (CustomSleepPower customSleepPower : powers) {
+                    if (customSleepPower.doesApply(world, hitResult.getBlockPos())) {
+                        player.startSleepInBed(hitResult.getBlockPos()).ifLeft(reason -> {
+                            if (reason != null) {
+                                player.displayClientMessage(
+                                        Component.literal("You cannot sleep right now: " + reason.name()),
+                                        true
+                                );
+                            }
+                        });
+                        return InteractionResult.SUCCESS;
                     }
                 }
             }
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         });
-        EntitySleepEvents.MODIFY_SLEEPING_DIRECTION.register(((entity, sleepingPos, sleepingDirection) -> {
-            if (entity instanceof PlayerEntity playerEntity) {
-                List<CustomSleepPower> powers = PowerHolderComponent.getPowers(playerEntity, CustomSleepPower.class);
-                if (powers.size() > 0) {
-                    for (CustomSleepPower customSleepPower : powers) {
-                        if (customSleepPower.doesApply(playerEntity.getWorld(), sleepingPos)) {
-                            return Direction.NORTH;
-                        }
+
+        // Modify sleeping direction
+        EntitySleepEvents.MODIFY_SLEEPING_DIRECTION.register((entity, sleepingPos, sleepingDirection) -> {
+            if (entity instanceof Player playerEntity) {
+
+                PowerHolderComponent component = PowerHolderComponent.getNullable(playerEntity);
+                List<CustomSleepPower> powers = component.getPowerTypes().stream()
+                        .filter(type -> type instanceof CustomSleepPower)
+                        .map(type -> (CustomSleepPower) type)
+                        .toList();
+
+                for (CustomSleepPower customSleepPower : powers) {
+                    if (customSleepPower.doesApply(playerEntity.level(), sleepingPos)) {
+                        return Direction.NORTH;
                     }
                 }
             }
             return sleepingDirection;
-        }));
-        EntitySleepEvents.ALLOW_BED.register(((entity, sleepingPos, state, vanillaResult) -> {
-            if (entity instanceof PlayerEntity playerEntity) {
-                List<CustomSleepPower> powers = PowerHolderComponent.getPowers(playerEntity, CustomSleepPower.class);
-                if (powers.size() > 0) {
-                    for (CustomSleepPower customSleepPower : powers) {
-                        if (customSleepPower.doesApply(playerEntity.getWorld(), sleepingPos)) {
-                            return ActionResult.SUCCESS;
-                        }
+        });
+
+        // Allow bed use
+        EntitySleepEvents.ALLOW_BED.register((entity, sleepingPos, state, vanillaResult) -> {
+            if (entity instanceof Player playerEntity) {
+
+                PowerHolderComponent component = PowerHolderComponent.getNullable(playerEntity);
+                List<CustomSleepPower> powers = component.getPowerTypes().stream()
+                        .filter(type -> type instanceof CustomSleepPower)
+                        .map(type -> (CustomSleepPower) type)
+                        .toList();
+
+                for (CustomSleepPower customSleepPower : powers) {
+                    if (customSleepPower.doesApply(playerEntity.level(), sleepingPos)) {
+                        return InteractionResult.SUCCESS;
                     }
                 }
             }
+            return InteractionResult.PASS;
+        });
 
-            return ActionResult.PASS;
-        }));
+        // Allow resetting time
         EntitySleepEvents.ALLOW_RESETTING_TIME.register(player -> {
-            var sleepPos = player.getSleepingPosition();
+
+            var sleepPos = player.getSleepingPos();
             if (sleepPos.isPresent()) {
-                List<CustomSleepPower> powers = PowerHolderComponent.getPowers(player, CustomSleepPower.class);
-                if (powers.size() > 0) {
-                    if (player.getWorld().isDay()) {
-                        return false;
-                    }
-                    for (CustomSleepPower customSleepPower : powers) {
-                        if (customSleepPower.doesApply(player.getWorld(), sleepPos.get())) {
-                            return true;
-                        }
+
+                PowerHolderComponent component = PowerHolderComponent.getNullable(player);
+                List<CustomSleepPower> powers = component.getPowerTypes().stream()
+                        .filter(type -> type instanceof CustomSleepPower)
+                        .map(type -> (CustomSleepPower) type)
+                        .toList();
+
+                if (player.level().isDay()) {
+                    return false;
+                }
+
+                for (CustomSleepPower customSleepPower : powers) {
+                    if (customSleepPower.doesApply(player.level(), sleepPos.get())) {
+                        return true;
                     }
                 }
             }
             return true;
         });
 
-        // This seems to cause issues with actually respawning.
-//        EntitySleepEvents.ALLOW_SETTING_SPAWN.register(((player, sleepingPos) -> {
-//            List<CustomSleepPower> powers = PowerHolderComponent.getPowers(player, CustomSleepPower.class);
-//            if (powers.size() > 0) {
-//                for (CustomSleepPower customSleepPower : powers) {
-//                    if (customSleepPower.doesApply(player.world, sleepingPos)) {
-//                        return true;
-//                    }
-//                }
-//            }
-//            return false;
-//        }));
+        // Modify wake-up position
+        EntitySleepEvents.MODIFY_WAKE_UP_POSITION.register((entity, sleepingPos, bedState, wakeUpPos) -> {
 
-        EntitySleepEvents.MODIFY_WAKE_UP_POSITION.register(((entity, sleepingPos, bedState, wakeUpPos) -> {
-            List<CustomSleepPower> powers = PowerHolderComponent.getPowers(entity, CustomSleepPower.class);
-            if (powers.size() > 0) {
-                for (CustomSleepPower customSleepPower : powers) {
-                    if (customSleepPower.doesApply(entity.getWorld(), sleepingPos)) {
-                        return Dismounting.findRespawnPos(entity.getType(), entity.getWorld(), sleepingPos, true);
-                    }
+            PowerHolderComponent component = PowerHolderComponent.getNullable(entity);
+            List<CustomSleepPower> powers = component.getPowerTypes().stream()
+                    .filter(type -> type instanceof CustomSleepPower)
+                    .map(type -> (CustomSleepPower) type)
+                    .toList();
+
+            for (CustomSleepPower customSleepPower : powers) {
+                if (customSleepPower.doesApply(entity.level(), sleepingPos)) {
+                    return DismountHelper.findSafeDismountLocation(
+                            entity.getType(),
+                            entity.level(),
+                            sleepingPos,
+                            true
+                    );
                 }
             }
             return wakeUpPos;
-        }));
+        });
     }
 }

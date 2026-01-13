@@ -12,5 +12,6 @@
     "moborigins:bee",
     "moborigins:fox",
     "moborigins:drowned"
-  ]
+  ],
+  "exclude_random": []
 }

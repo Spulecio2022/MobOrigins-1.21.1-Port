@@ -4,27 +4,28 @@
     "type": "apoli:modify_damage_dealt",
     "condition": {
       "type": "apoli:biome",
-      "condition": {
+      "biome_condition": {
         "type": "apoli:temperature",
         "comparison": "<",
         "compare_to": 0.15
       }
     },
     "modifier": {
-      "value": 3,
-      "operation": "addition"
+      "amount": 3,
+      "operation": "add_total_early"
     }
   },
   "resistance": {
     "type": "apoli:modify_damage_taken",
-    "damage_condition": {
-      "type": "origins:name",
-      "name": "freeze"
-    },
     "modifier": {
-      "operation": "multiply_total",
-      "value": -1
+      "amount": 0,
+      "operation": "multiply_total_multiplicative",
+      "condition": {
+        "type": "apoli:damage",
+        "damage_type": {
+          "name": "minecraft:freeze"
+        }
+      }
     }
   }
-
 }

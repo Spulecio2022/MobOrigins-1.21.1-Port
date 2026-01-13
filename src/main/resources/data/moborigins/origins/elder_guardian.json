@@ -1,4 +1,6 @@
 {
+  "name": "Elder Guardian",
+  "description": "An ancient ocean sentinel empowered with potent magic and hardened defenses.",
   "powers": [
     "moborigins:elder_spikes",
     "moborigins:elder_magic",
@@ -10,14 +12,16 @@
     "origins:water_breathing",
     "origins:water_vision",
     "origins:aqua_affinity",
-    "origins:swim_speed",
     "origins:like_water",
     "origins:aquatic",
     "origins:conduit_power_on_land",
+    "moborigins:elder_guardian_swim",
     "origins:air_from_potions"
   ],
   "unchoosable": true,
-  "icon": "minecraft:prismarine_crystals",
+  "icon": {
+    "id": "minecraft:prismarine_crystals"
+  },
   "order": 6,
   "impact": 3
 }

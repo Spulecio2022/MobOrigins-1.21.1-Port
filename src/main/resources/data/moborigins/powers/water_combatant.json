@@ -1,10 +1,14 @@
 {
   "type": "apoli:modify_damage_dealt",
-  "modifier": {
-    "name": "Water combatant damage",
-    "operation": "addition",
-    "value": 3.0
-  },
+
+  "modifiers": [
+    {
+      "name": "Water combatant damage",
+      "operation": "apoli:add_total_late",
+      "amount": 3.0
+    }
+  ],
+
   "condition": {
     "type": "apoli:in_block_anywhere",
     "block_condition": {

@@ -1,4 +1,6 @@
 {
+  "name": "Wolf",
+  "description": "A loyal pack hunter empowered by the moon, fierce in groups and fearsome when roused.",
   "powers": [
     "moborigins:wolf_body",
     "moborigins:full_moon",
@@ -7,7 +9,9 @@
     "moborigins:wolf_pack",
     "origins:carnivore"
   ],
-  "icon": "minecraft:bone",
+  "icon": {
+    "id": "minecraft:bone"
+  },
   "order": 2,
   "impact": 1
 }

@@ -1,18 +1,21 @@
 pluginManagement {
     repositories {
-        maven {
-            name = 'Fabric'
-            url = 'https://maven.fabricmc.net/'
-        }
-        mavenCentral()
+        maven { url = 'https://maven.fabricmc.net/' }
         gradlePluginPortal()
-        maven {
-            name = 'Quilt'
-            url = 'https://maven.quiltmc.org/repository/release'
-        }
-        maven {
-            name = 'Cotton'
-            url = 'https://server.bbkr.space/artifactory/libs-release/'
+        mavenCentral()
+        maven { url = 'https://maven.quiltmc.org/repository/release' }
+        maven { url = 'https://server.bbkr.space/artifactory/libs-release/' }
+    }
+
+    plugins {
+        id("fabric-loom") version "1.6-SNAPSHOT"
+    }
+}
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        create("extraLibs") {
+            from(files("gradle/libs.versions.toml"))
         }
     }
 }

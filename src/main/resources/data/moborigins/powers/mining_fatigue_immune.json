@@ -1,4 +1,5 @@
 {
   "type": "apoli:effect_immunity",
-  "effect": "minecraft:mining_fatigue"
+  "effect": "minecraft:mining_fatigue",
+  "hidden": true
 }

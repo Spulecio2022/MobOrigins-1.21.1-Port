@@ -1,5 +1,6 @@
 {
   "type": "apoli:multiple",
+
   "block": {
     "type": "apoli:action_over_time",
     "interval": 20,
@@ -12,7 +13,7 @@
             "conditions": [
               {
                 "type": "apoli:biome",
-                "condition": {
+                "biome_condition": {
                   "type": "apoli:temperature",
                   "comparison": "<",
                   "compare_to": 1.0
@@ -36,7 +37,7 @@
         {
           "condition": {
             "type": "apoli:biome",
-            "condition": {
+            "biome_condition": {
               "type": "apoli:temperature",
               "comparison": ">=",
               "compare_to": 1.0
@@ -51,13 +52,13 @@
       ]
     }
   },
+
   "on_death": {
     "type": "apoli:action_on_callback",
     "entity_action_respawned": {
       "type": "apoli:change_resource",
       "resource": "moborigins:temperature",
       "change": -100
-
     }
   }
 }
